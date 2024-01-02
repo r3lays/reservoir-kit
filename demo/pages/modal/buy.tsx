@@ -18,9 +18,9 @@ const NORMALIZE_ROYALTIES = process.env.NEXT_PUBLIC_NORMALIZE_ROYALTIES
 
 const BuyPage: NextPage = () => {
   const router = useRouter()
-  const [collectionId, setCollectionId] = useState(DEFAULT_COLLECTION_ID)
-  const [tokenId, setTokenId] = useState(DEFAULT_TOKEN_ID)
+  const [token, setToken] = useState(`${DEFAULT_COLLECTION_ID}:${DEFAULT_TOKEN_ID}`)
   const [orderId, setOrderId] = useState('')
+  const [executionMethod, setExecutionMethod] = useState< "seaport-intent" | "intent" | undefined>(undefined)
   const [chainId, setChainId] = useState<string | number>('')
   const [feesOnTopBps, setFeesOnTopBps] = useState<string[]>([])
   const [feesOnTopUsd, setFeesOnTopUsd] = useState<string[]>([])
@@ -46,19 +46,11 @@ const BuyPage: NextPage = () => {
       <PrivyConnectButton />
 
       <div>
-        <label>Collection Id: </label>
+        <label>Token: </label>
         <input
           type="text"
-          value={collectionId}
-          onChange={(e) => setCollectionId(e.target.value)}
-        />
-      </div>
-      <div>
-        <label>Token Id: </label>
-        <input
-          type="text"
-          value={tokenId}
-          onChange={(e) => setTokenId(e.target.value)}
+          value={token}
+          onChange={(e) => setToken(e.target.value)}
         />
       </div>
       <div>
@@ -126,7 +118,41 @@ const BuyPage: NextPage = () => {
           }}
         />
       </div>
-
+      <div
+  style={{
+    display: "flex",
+    flexDirection: "column",
+    gap: "5px",
+  }}
+>
+  <label>Execution Method:</label>
+  <button
+    onClick={() =>
+      setExecutionMethod(
+        executionMethod === "seaport-intent" ? undefined : "seaport-intent"
+      )
+    }
+    style={{
+      border: "none",
+      borderRadius: "5px",
+      background: executionMethod === "seaport-intent" ? "blue" : "",
+    }}
+  >
+    seaport-intent
+  </button>
+  <button
+    onClick={() =>
+      setExecutionMethod(executionMethod === "intent" ? undefined : "intent")
+    }
+    style={{
+      border: "none",
+      borderRadius: "5px",
+      background: executionMethod === "intent" ? "blue" : "",
+    }}
+  >
+    intent
+  </button>
+</div>
       <BuyModal
         chainId={Number(chainId)}
         trigger={
@@ -146,9 +172,9 @@ const BuyPage: NextPage = () => {
             Buy Now
           </button>
         }
-        collectionId={collectionId}
-        tokenId={tokenId}
+        token={token}
         orderId={orderId}
+        executionMethod={executionMethod}
         feesOnTopBps={feesOnTopBps}
         feesOnTopUsd={feesOnTopUsd}
         normalizeRoyalties={normalizeRoyalties}
