@@ -1,6 +1,6 @@
 import { NextPage } from 'next'
 import { useReservoirClient } from '@reservoir0x/reservoir-kit-ui'
-import { ConnectButton } from '@rainbow-me/rainbowkit'
+import { PrivyConnectButton } from 'components/PrivyConnectButton'
 import ThemeSwitcher from 'components/ThemeSwitcher'
 import { useState } from 'react'
 import ChainSwitcher from 'components/ChainSwitcher'
@@ -28,7 +28,7 @@ const CallActionPage: NextPage = () => {
         paddingTop: 150,
       }}
     >
-      <ConnectButton />
+      <PrivyConnectButton />
       <input type="number" placeholder='Which chain to interact with?' value={toChainId} onChange={(e) => setToChainId(Number(e.target.value))} />
       <textarea style={{minHeight: 100, minWidth: 300}} placeholder='Add a transaction object, must be valid json: {to: "", data: "", value: ""}' value={tx} onChange={(e) => setTx(e.target.value)}/>
       <button

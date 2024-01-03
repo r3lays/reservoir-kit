@@ -1,6 +1,6 @@
 import { NextPage } from 'next'
 import { useDynamicTokens } from '@reservoir0x/reservoir-kit-ui'
-import { ConnectButton } from '@rainbow-me/rainbowkit'
+import { PrivyConnectButton } from 'components/PrivyConnectButton'
 import { useInView } from 'react-intersection-observer'
 import { useEffect, useState } from 'react'
 import ChainSwitcher from 'components/ChainSwitcher'
@@ -41,7 +41,7 @@ const Tokens: NextPage = () => {
         alignItems: 'flex-start',
       }}
     >
-      <ConnectButton />
+      <PrivyConnectButton />
       <div>
         <label>Collection Id: </label>
         <input
