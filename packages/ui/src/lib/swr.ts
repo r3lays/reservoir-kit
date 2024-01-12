@@ -37,7 +37,7 @@ export const defaultFetcher = (params: string[] | string) => {
     .then((res) => {
       if (res.headers?.['deprecation'] === 'true') {
         console.warn(
-          `Warning: API ${res.url} is deprecated. Stability and performance may be affected.`
+          `Warning: API ${res.config.url} is deprecated. Stability and performance may be affected.`
         )
       }
 
