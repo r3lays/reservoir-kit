@@ -31,17 +31,17 @@ export const defaultFetcher = (params: string[] | string) => {
     resource = params
   }
   const headers = defaultHeaders(apiKey, clientVersion)
-  return fetch(resource, {
+  return axios(resource, {
     headers,
   })
     .then((res) => {
-      if (res.headers?.get('deprecation') === 'true') {
+      if (res.headers?.['deprecation'] === 'true') {
         console.warn(
           `Warning: API ${res.url} is deprecated. Stability and performance may be affected.`
         )
       }
 
-      return res.json()
+      return JSON.parse(res.data)
     })
     .catch((e) => {
       throw e
