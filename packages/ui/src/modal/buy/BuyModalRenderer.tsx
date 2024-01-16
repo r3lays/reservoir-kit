@@ -23,6 +23,8 @@ import {
   LogLevel,
   ReservoirClientActions,
   ReservoirWallet,
+  axios,
+  BuyTokenBodyParameters,
 } from '@reservoir0x/reservoir-sdk'
 import { Address, WalletClient, formatUnits, zeroAddress } from 'viem'
 import { customChains } from '@reservoir0x/reservoir-sdk'
@@ -79,6 +81,7 @@ type ChildrenProps = {
   blockExplorerBaseName: string
   steps: Execute['steps'] | null
   stepData: BuyModalStepData | null
+  path: BuyPath
   quantity: number
   isConnected: boolean
   isOwner: boolean
@@ -102,8 +105,8 @@ type Props = {
   onConnectWallet: () => void
   children: (props: ChildrenProps) => ReactNode
   walletClient?: ReservoirWallet | WalletClient
-  executionMethod: BuyTokenOptions['executionMethod']
   usePermit?: boolean
+  executionMethod?: BuyTokenBodyParameters['executionMethod']
 }
 
 export const BuyModalRenderer: FC<Props> = ({
@@ -177,6 +180,7 @@ export const BuyModalRenderer: FC<Props> = ({
     },
     path,
     chainId: rendererChain?.id,
+    nativeOnly: executionMethod !== undefined,
   })
 
   const paymentCurrency = paymentTokens?.find(
@@ -281,6 +285,10 @@ export const BuyModalRenderer: FC<Props> = ({
         options.normalizeRoyalties = normalizeRoyalties
       }
 
+      if (executionMethod) {
+        options.executionMethod = executionMethod
+      }
+
       if (paymentCurrency) {
         options.currency = paymentCurrency.address
         if (paymentCurrency.chainId) {
@@ -380,6 +388,7 @@ export const BuyModalRenderer: FC<Props> = ({
       includeListingCurrency,
       feesOnTopBps,
       feesOnTopUsd,
+      executionMethod,
       _setPaymentCurrency,
       executionMethod,
     ]
@@ -481,16 +490,16 @@ export const BuyModalRenderer: FC<Props> = ({
       currencyChainId: paymentCurrency?.chainId,
     }
 
+    const relayerFee = BigInt(buyResponseFees?.relayer?.amount?.raw ?? 0)
+
     if (feesOnTopBps && feesOnTopBps?.length > 0) {
       const fixedFees = feesOnTopBps.map((fullFee) => {
         const [referrer, feeBps] = fullFee.split(':')
         let totalFeeTruncated = totalIncludingFees - feeOnTop
 
-        // if relayer fees, subtract from total
-        if (buyResponseFees?.relayer?.amount?.raw) {
-          totalFeeTruncated -= BigInt(
-            buyResponseFees?.relayer?.amount?.raw ?? 0
-          )
+        // if relayer fee, subtract from total
+        if (relayerFee) {
+          totalFeeTruncated -= relayerFee
         }
 
         const fee = Math.floor(
@@ -527,6 +536,10 @@ export const BuyModalRenderer: FC<Props> = ({
       options.usePermit = true
     }
 
+    if (executionMethod) {
+      options.executionMethod = executionMethod
+    }
+
     setBuyStep(BuyStep.Approving)
     const items: Item[] = []
     const item: Item = {
@@ -551,7 +564,7 @@ export const BuyModalRenderer: FC<Props> = ({
         items: items,
         expectedPrice: {
           [paymentCurrency?.address || zeroAddress]: {
-            raw: totalIncludingFees,
+            raw: totalIncludingFees - relayerFee,
             currencyAddress: paymentCurrency?.address,
             currencyDecimals: paymentCurrency?.decimals || 18,
           },
@@ -635,6 +648,7 @@ export const BuyModalRenderer: FC<Props> = ({
     paymentCurrency,
     usePermit,
     buyResponseFees,
+    executionMethod,
     mutateTokens,
     mutateCollection,
     onConnectWallet,
@@ -715,6 +729,7 @@ export const BuyModalRenderer: FC<Props> = ({
     } else {
       setHasEnoughCurrency(true)
     }
+    axios.defaults.headers.common['x-rkui-context'] = ''
   }, [totalIncludingFees, paymentCurrency])
 
   useEffect(() => {
@@ -725,9 +740,11 @@ export const BuyModalRenderer: FC<Props> = ({
       setSteps(null)
       setQuantity(1)
       setPath(undefined)
+      axios.defaults.headers.common['x-rkui-context'] = ''
       _setPaymentCurrency(undefined)
       setBuyResponseFees(undefined)
     } else {
+      axios.defaults.headers.common['x-rkui-context'] = 'buyModalRenderer'
       setQuantity(defaultQuantity || 1)
     }
   }, [open])
@@ -767,6 +784,7 @@ export const BuyModalRenderer: FC<Props> = ({
         blockExplorerBaseName,
         steps,
         stepData,
+        path,
         quantity,
         isConnected: wallet !== undefined,
         isOwner,

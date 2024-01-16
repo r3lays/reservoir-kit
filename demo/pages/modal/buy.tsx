@@ -7,6 +7,8 @@ import DeeplinkCheckbox from 'components/DeeplinkCheckbox'
 import { useRouter } from 'next/router'
 import { PrivyConnectButton } from 'components/PrivyConnectButton'
 import ChainSwitcher from 'components/ChainSwitcher'
+import { CrossmintPayButton } from "@crossmint/client-sdk-react-ui";
+import { BuyTokenBodyParameters } from '@reservoir0x/reservoir-sdk'
 
 const DEFAULT_COLLECTION_ID =
   process.env.NEXT_PUBLIC_DEFAULT_COLLECTION_ID ||
@@ -28,7 +30,11 @@ const BuyPage: NextPage = () => {
   const hasDeeplink = router.query.deeplink !== undefined
   const [normalizeRoyalties, setNormalizeRoyalties] =
     useState(NORMALIZE_ROYALTIES)
+
   const { login } = usePrivy();
+
+  const collectionId = token?.split(':')[0]
+
 
   return (
     <div
@@ -107,6 +113,7 @@ const BuyPage: NextPage = () => {
           }}
         />
       </div>
+
       <DeeplinkCheckbox />
       <div>
         <label>Normalize Royalties: </label>

@@ -21,6 +21,7 @@ import {
   LogLevel,
   ReservoirChain,
   ReservoirClientActions,
+  axios,
 } from '@reservoir0x/reservoir-sdk'
 import { Address, WalletClient, formatUnits, zeroAddress } from 'viem'
 import { EnhancedCurrency } from '../../hooks/usePaymentTokensv2'
@@ -575,11 +576,13 @@ export const SweepModalRenderer: FC<Props> = ({
       setSweepStep(SweepStep.Idle)
       setTransactionError(null)
       setFetchedInitialOrders(false)
+      axios.defaults.headers.common['x-rkui-context'] = ''
       setIsFetchingPath(false)
       _setPaymentCurrency(undefined)
       setBuyResponseFees(undefined)
       setStepData(null)
     } else {
+      axios.defaults.headers.common['x-rkui-context'] = 'sweepModalRenderer'
       setItemAmount(defaultQuantity || 1)
     }
   }, [open])
@@ -628,16 +631,16 @@ export const SweepModalRenderer: FC<Props> = ({
       currencyChainId: paymentCurrency?.chainId,
     }
 
+    const relayerFee = BigInt(buyResponseFees?.relayer?.amount?.raw ?? 0)
+
     if (feesOnTopBps && feesOnTopBps?.length > 0) {
       const fixedFees = feesOnTopBps.map((fullFee) => {
         const [referrer, feeBps] = fullFee.split(':')
         let totalFeeTruncated = totalIncludingFees - feeOnTop
 
-        // if cross-chain, subtract relayer fees from total
-        if (buyResponseFees?.relayer?.amount?.raw) {
-          totalFeeTruncated -= BigInt(
-            buyResponseFees?.relayer?.amount?.raw ?? 0
-          )
+        // if relayer fee, subtract from total
+        if (relayerFee) {
+          totalFeeTruncated -= relayerFee
         }
 
         const fee = Math.floor(
@@ -687,7 +690,7 @@ export const SweepModalRenderer: FC<Props> = ({
         ],
         expectedPrice: {
           [paymentCurrency?.address || zeroAddress]: {
-            raw: totalIncludingFees,
+            raw: totalIncludingFees - relayerFee,
             currencyAddress: paymentCurrency?.address,
             currencyDecimals: paymentCurrency?.decimals || 18,
           },

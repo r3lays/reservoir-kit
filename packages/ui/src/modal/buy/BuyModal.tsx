@@ -26,13 +26,12 @@ import {
   faChevronRight,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { BuyModalRenderer, BuyStep, BuyModalStepData } from './BuyModalRenderer'
 import {
-  BuyModalRenderer,
-  BuyStep,
-  BuyModalStepData,
-  BuyTokenOptions,
-} from './BuyModalRenderer'
-import { Execute, ReservoirWallet } from '@reservoir0x/reservoir-sdk'
+  BuyTokenBodyParameters,
+  Execute,
+  ReservoirWallet,
+} from '@reservoir0x/reservoir-sdk'
 import ProgressBar from '../ProgressBar'
 import QuantitySelector from '../QuantitySelector'
 import { formatNumber } from '../../lib/numbers'
@@ -67,15 +66,16 @@ type Props = Pick<Parameters<typeof Modal>['0'], 'trigger'> & {
   openState?: [boolean, Dispatch<SetStateAction<boolean>>]
   token?: string
   orderId?: string
+  creditCardCheckoutButton?: JSX.Element
   chainId?: number
   defaultQuantity?: number
-  executionMethod?: BuyTokenOptions['executionMethod']
   feesOnTopBps?: string[] | null
   feesOnTopUsd?: string[] | null
   normalizeRoyalties?: boolean
   copyOverrides?: Partial<typeof ModalCopy>
   walletClient?: ReservoirWallet | WalletClient
   usePermit?: boolean
+  executionMethod?: BuyTokenBodyParameters['executionMethod']
   onConnectWallet: () => void
   onGoToToken?: () => any
   onPurchaseComplete?: (data: PurchaseData) => void
@@ -103,13 +103,14 @@ export function BuyModal({
   copyOverrides,
   walletClient,
   usePermit,
+  executionMethod,
   onConnectWallet,
   onPurchaseComplete,
   onPurchaseError,
   onClose,
   onGoToToken,
   onPointerDownOutside,
-  executionMethod,
+  creditCardCheckoutButton,
 }: Props): ReactElement {
   const copy: typeof ModalCopy = { ...ModalCopy, ...copyOverrides }
   const [open, setOpen] = useFallbackState(
@@ -379,14 +380,17 @@ export function BuyModal({
 
                 <Box css={{ p: '$4', width: '100%' }}>
                   {hasEnoughCurrency || !isConnected ? (
-                    <Button
-                      disabled={!hasEnoughCurrency && isConnected}
-                      onClick={buyToken}
-                      css={{ width: '100%' }}
-                      color="primary"
-                    >
-                      {!isConnected ? copy.ctaConnect : copy.ctaCheckout}
-                    </Button>
+                    <>
+                      <Button
+                        disabled={!hasEnoughCurrency && isConnected}
+                        onClick={buyToken}
+                        css={{ width: '100%' }}
+                        color="primary"
+                      >
+                        {!isConnected ? copy.ctaConnect : copy.ctaCheckout}
+                      </Button>
+                      {creditCardCheckoutButton && creditCardCheckoutButton}
+                    </>
                   ) : (
                     <Flex direction="column" align="center">
                       <Flex align="center" css={{ mb: '$3' }}>

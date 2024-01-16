@@ -7,11 +7,12 @@ import {
   isAPIError,
   refreshLiquidity,
 } from '../utils'
-import axios, { AxiosRequestConfig } from 'axios'
+import { axios } from '../utils'
+import { AxiosRequestConfig } from 'axios'
 import { WalletClient } from 'viem'
 import { isViemWalletClient } from '../utils/viemWallet'
 
-type BuyTokenBodyParameters = NonNullable<
+export type BuyTokenBodyParameters = NonNullable<
   paths['/execute/buy/v7']['post']['parameters']['body']['body']
 >
 
