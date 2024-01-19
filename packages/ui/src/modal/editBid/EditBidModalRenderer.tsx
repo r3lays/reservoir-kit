@@ -350,9 +350,18 @@ export const EditBidModalRenderer: FC<Props> = ({
   }, [traits])
 
   useEffect(() => {
-    axios.defaults.headers.common['x-rkui-context'] = open
-      ? 'editBidModalRenderer'
-      : ''
+    //@ts-ignore
+    if (bid?.criteria?.kind == 'attribute' && bid?.criteria?.data.attribute) {
+      //@ts-ignore
+      setTrait(bid?.criteria?.data?.attribute)
+    }
+  }, [bid])
+
+  axios.defaults.headers.common['x-rkui-context'] = open
+    ? 'editBidModalRenderer'
+    : ''
+
+  useEffect(() => {
     if (!open) {
       setEditBidStep(EditBidStep.Edit)
       setExpirationOption(expirationOptions[3])
