@@ -7,7 +7,6 @@ import DeeplinkCheckbox from 'components/DeeplinkCheckbox'
 import { useRouter } from 'next/router'
 import { PrivyConnectButton } from 'components/PrivyConnectButton'
 import ChainSwitcher from 'components/ChainSwitcher'
-import { CrossmintPayButton } from "@crossmint/client-sdk-react-ui";
 import { BuyTokenBodyParameters } from '@reservoir0x/reservoir-sdk'
 
 const DEFAULT_COLLECTION_ID =
