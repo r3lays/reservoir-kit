@@ -67,6 +67,7 @@ type Props = Pick<Parameters<typeof Modal>['0'], 'trigger'> & {
   openState?: [boolean, Dispatch<SetStateAction<boolean>>]
   tokens: AcceptBidTokenData[]
   chainId?: number
+  currency?: string
   normalizeRoyalties?: boolean
   copyOverrides?: Partial<typeof ModalCopy>
   walletClient?: ReservoirWallet | WalletClient
@@ -100,6 +101,7 @@ export function AcceptBidModal({
   onBidAcceptError,
   onCurrentStepUpdate,
   onPointerDownOutside,
+  currency,
 }: Props): ReactElement {
   const [open, setOpen] = useFallbackState(
     openState ? openState[0] : false,
@@ -119,6 +121,7 @@ export function AcceptBidModal({
 
   return (
     <AcceptBidModalRenderer
+      currency={currency}
       open={open}
       chainId={modalChain?.id}
       tokens={tokens}
@@ -135,6 +138,7 @@ export function AcceptBidModal({
         usdPrices,
         prices,
         tokensData,
+        swapCurrency,
         address,
         stepData,
         acceptBid,
@@ -299,8 +303,10 @@ export function AcceptBidModal({
                         netAmount={bidPath.quote}
                         price={bidPath.totalPrice}
                         fees={bidPath.builtInFees}
-                        currency={bidPath.currency}
-                        decimals={bidPath.currencyDecimals}
+                        currency={swapCurrency?.contract || bidPath.currency}
+                        decimals={
+                          swapCurrency?.decimals || bidPath.currencyDecimals
+                        }
                         sourceImg={
                           bidPath.source
                             ? `${baseApiUrl}/redirect/sources/${bidPath.source}/logo/v2`
@@ -483,6 +489,7 @@ export function AcceptBidModal({
                 {stepData?.steps.map((step) =>
                   step?.items && step.items.length > 0 ? (
                     <ApproveBidCollapsible
+                      currency={swapCurrency}
                       key={step.id}
                       step={step}
                       tokensData={tokensData}
