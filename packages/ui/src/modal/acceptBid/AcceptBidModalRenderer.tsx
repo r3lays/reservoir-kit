@@ -215,7 +215,7 @@ export const AcceptBidModalRenderer: FC<Props> = ({
       >['0']['options']
       let options: AcceptOfferOptions = {
         onlyPath: true,
-        currency: currency,
+        ...(currency && { currency }),
         partial: true,
       }
       if (normalizeRoyalties !== undefined) {
@@ -388,7 +388,7 @@ export const AcceptBidModalRenderer: FC<Props> = ({
     >['0']['options']
     let options: AcceptOfferOptions = {
       partial: true,
-      currency: currency,
+      ...(currency && { currency }),
     }
 
     if (normalizeRoyalties !== undefined) {
