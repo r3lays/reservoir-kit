@@ -16,7 +16,7 @@
   "scripts": {
     "lint": "tsc --skipLibCheck --noEmit",
     "demo": "pnpm -C demo dev",
-    "clean": "pnpm --filter=!demo --filter=!sdk-demo -r exec clean",
+    "clean": "pnpm --filter=!reservoir-kit-demo --filter=!sdk-demo -r exec clean",
     "test": "pnpm -C @reservoir0x/reservoir-sdk test",
     "dev:clean": "./scripts/package-cleanup.sh",
     "dev": "pnpm dev:watch",
@@ -28,7 +28,7 @@
     "build:fix-type-defs": "node ./scripts/fix-type-defs-imports",
     "build:cleanup": "mv tsconfig.json tsconfig.production.json && mv tsconfig.tmp.json tsconfig.json",
     "postbuild": "node ./scripts/check-missing-types",
-    "publish:stable": "pnpm --filter=!demo --filter=!sdk-demo --filter=!reservoir-kit -r publish --access public ",
+    "publish:stable": "pnpm --filter=!reservoir-kit-demo --filter=!sdk-demo --filter=!reservoir-kit -r publish --access public ",
     "reset": "pnpm clean && rm -rf node_modules .parcel-cache",
     "tags:delete": "git tag --delete sdk-demo@undefined && git tag --delete reservoir-kit-demo@undefined",
     "package:change": "pnpm changeset && git stage ./.changeset/* && git commit --m \"feat: changeset\" && git push",
