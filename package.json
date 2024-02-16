@@ -16,7 +16,7 @@
   "scripts": {
     "lint": "tsc --skipLibCheck --noEmit",
     "demo": "pnpm -C demo dev",
-    "clean": "pnpm --filter=!reservoir-kit-demo --filter=!sdk-demo -r exec clean",
+    "clean": "pnpm --filter=!reservoir-kit-demo --filter=!sdk-demo -r run clean",
     "test": "pnpm -C @reservoir0x/reservoir-sdk test",
     "dev:clean": "./scripts/package-cleanup.sh",
     "dev": "pnpm dev:watch",
